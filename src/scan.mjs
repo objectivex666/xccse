@@ -166,6 +166,7 @@ export async function scanRange({
   to = Number.MAX_SAFE_INTEGER,
   maxRequests = 100,
   requestsPerSecond = 2,
+  concurrency = 1,
   resume = true,
   log = (m) => console.error(m),
 } = {}) {
@@ -182,11 +183,11 @@ export async function scanRange({
   for (const work of readJsonlSafe(SCAN_WORKS_FILE)) collected.set(work.id, work);
 
   const stats = { requests: 0, ok: 0, notFound: 0, failed: 0, public: 0, bytes: 0, latencies: [] };
-  let id = startId;
+  const endId = Math.min(to, startId + maxRequests - 1);
+  let nextId = startId;
+  const progressEvery = maxRequests > 2000 ? 500 : 25;
 
-  for (let i = 0; i < maxRequests && id <= to; i += 1) {
-    await limiter.acquire();
-    const result = await fetchProjectRecord(id);
+  const handle = (id, result) => {
     stats.requests += 1;
     stats.bytes += result.bytes;
     stats.latencies.push(result.latencyMs);
@@ -219,21 +220,33 @@ export async function scanRange({
       }),
     );
 
-    id += 1;
-    writeCheckpoint({ nextId: id, from, to, updatedAt: new Date().toISOString() });
-
-    if (stats.requests % 25 === 0) {
+    if (stats.requests % progressEvery === 0) {
       log(
         `  已扫描 ${stats.requests} 次：存在 ${stats.ok}，公开 ${stats.public}，404 ${stats.notFound}，失败 ${stats.failed}`,
       );
+      writeCheckpoint({ nextId, from, to, updatedAt: new Date().toISOString() });
     }
-  }
+  };
+
+  const worker = async () => {
+    while (nextId <= endId) {
+      const id = nextId;
+      nextId += 1;
+      await limiter.acquire();
+      const result = await fetchProjectRecord(id);
+      handle(id, result);
+    }
+  };
+
+  const workers = Math.max(1, Math.min(concurrency, endId - startId + 1));
+  await Promise.all(Array.from({ length: workers }, worker));
+  writeCheckpoint({ nextId: endId + 1, from, to, updatedAt: new Date().toISOString() });
 
   if (collected.size) writeJsonl(SCAN_WORKS_FILE, [...collected.values()].sort((a, b) => a.id - b.id));
 
   return {
     ...stats,
-    nextId: id,
+    nextId: endId + 1,
     avgLatencyMs: stats.latencies.length
       ? Math.round(stats.latencies.reduce((a, b) => a + b, 0) / stats.latencies.length)
       : 0,

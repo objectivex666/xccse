@@ -2,7 +2,8 @@ import fs from "node:fs";
 import path from "node:path";
 import { DatabaseSync } from "node:sqlite";
 import { analyze } from "./tokenize.mjs";
-import { DATA_DIR, WORKS_FILE, USERS_FILE, readJsonl } from "./crawl.mjs";
+import { DATA_DIR, WORKS_FILE, USERS_FILE, mergeWork, readJsonl } from "./crawl.mjs";
+import { SCAN_WORKS_FILE } from "./scan.mjs";
 
 export const DB_FILE = path.join(DATA_DIR, "xccse.db");
 
@@ -77,10 +78,19 @@ function bodyText(work) {
 export function buildIndex({
   worksFile = WORKS_FILE,
   usersFile = USERS_FILE,
+  scanWorksFile = SCAN_WORKS_FILE,
   dbFile = DB_FILE,
   log = (m) => console.error(m),
 } = {}) {
-  const works = readJsonl(worksFile);
+  // 主数据 + ID 扫描得到的公开作品，按 id 合并
+  const byId = new Map();
+  for (const work of readJsonl(worksFile)) byId.set(work.id, work);
+  if (scanWorksFile) {
+    for (const work of readJsonl(scanWorksFile)) {
+      byId.set(work.id, mergeWork(byId.get(work.id) ?? {}, work));
+    }
+  }
+  const works = [...byId.values()].sort((a, b) => a.id - b.id);
   const authors = readJsonl(usersFile);
   if (!works.length) throw new Error(`没有可索引的数据，请先运行 crawl（${worksFile}）`);
 

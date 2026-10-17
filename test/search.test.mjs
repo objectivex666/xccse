@@ -48,7 +48,7 @@ fs.writeFileSync(
    JSON.stringify({ user_id: 101, username: "小红", fans: 3, follows: 1, avatar: "", signature: "" }), "\n"].join(""),
 );
 
-buildIndex({ worksFile, usersFile, dbFile, log: () => {} });
+buildIndex({ worksFile, usersFile, scanWorksFile: null, dbFile, log: () => {} });
 const db = openDb(dbFile);
 const ids = (result) => result.rows.map((r) => r.id);
 

@@ -177,6 +177,7 @@ async function main() {
       to: values.to ? Number(values.to) : undefined,
       maxRequests: Number(values["max-requests"]),
       requestsPerSecond: Number(values.rate),
+      concurrency: Number(values.concurrency),
       resume: !values["no-resume"],
       log,
     });

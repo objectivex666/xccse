@@ -2,8 +2,8 @@ import fs from "node:fs";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 import { analyze } from "./tokenize.mjs";
-import { WORKS_FILE, readJsonl } from "./crawl.mjs";
-import { normalizeWork } from "./crawl.mjs";
+import { WORKS_FILE, mergeWork, normalizeWork, readJsonl } from "./crawl.mjs";
+import { SCAN_WORKS_FILE } from "./scan.mjs";
 
 export const DOCS_DIR = path.resolve("docs");
 
@@ -32,8 +32,14 @@ function copyInto(file, target, transform = (s) => s) {
 }
 
 export function buildStatic({ worksFile = WORKS_FILE, outDir = DOCS_DIR, log = console.log } = {}) {
-  const works = readJsonl(worksFile)
-    .map(normalizeWork)
+  const byId = new Map();
+  for (const work of readJsonl(worksFile)) byId.set(work.id, work);
+  for (const work of readJsonl(SCAN_WORKS_FILE)) {
+    byId.set(work.id, mergeWork(byId.get(work.id) ?? {}, work));
+  }
+  const works = [...byId.values()]
+    .sort((a, b) => a.id - b.id)
+    .map((w) => normalizeWork(w))
     .filter(Boolean)
     .map(compact);
 
