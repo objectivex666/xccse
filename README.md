@@ -3,6 +3,8 @@
 针对 [code.xueersi.com](https://code.xueersi.com/)（学而思编程）公开作品区的搜索引擎：
 自带爬虫、SQLite FTS5 索引和网页界面，支持中文精确子串检索、拼音检索与语言筛选。
 
+**在线版：** https://objectivex666.github.io/xccse/
+
 ## 为什么要做这个
 
 站点自带的搜索在当前线上版本里是**不可用**的（实测 2026-10）：
