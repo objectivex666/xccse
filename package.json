@@ -1,0 +1,24 @@
+{
+  "name": "xccse",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "学而思编程 (code.xueersi.com) 公开作品搜索引擎：爬虫 + SQLite FTS5 索引 + 网页界面",
+  "bin": { "xccse": "./src/cli.mjs" },
+  "scripts": {
+    "crawl": "node --disable-warning=ExperimentalWarning src/cli.mjs crawl",
+    "index": "node --disable-warning=ExperimentalWarning src/cli.mjs index",
+    "serve": "node --disable-warning=ExperimentalWarning src/cli.mjs serve",
+    "search": "node --disable-warning=ExperimentalWarning src/cli.mjs search",
+    "scan": "node --disable-warning=ExperimentalWarning src/cli.mjs scan",
+    "test": "node --test --disable-warning=ExperimentalWarning",
+    "verify:ui": "node scripts/verify-ui.mjs"
+  },
+  "engines": { "node": ">=22.5" },
+  "dependencies": {
+    "pinyin-pro": "^3.29.5"
+  },
+  "devDependencies": {
+    "playwright-core": "^1.64.1"
+  }
+}

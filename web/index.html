@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>学而思编程作品搜索</title>
+<meta name="description" content="搜索 code.xueersi.com 公开作品：支持中文、拼音与语言筛选。">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/app.css">
+</head>
+<body>
+<header class="masthead">
+  <div class="masthead-inner">
+    <a class="brand" href="/">
+      <span class="brand-mark" aria-hidden="true">⌘</span>
+      <span class="brand-text">
+        <strong>学而思编程搜索</strong>
+        <small>code.xueersi.com 公开作品索引</small>
+      </span>
+    </a>
+    <nav class="masthead-links">
+      <a href="https://code.xueersi.com/" target="_blank" rel="noopener noreferrer">前往学而思编程 ↗</a>
+    </nav>
+  </div>
+</header>
+
+<main class="page">
+  <section class="hero">
+    <form class="searchbar" id="search-form" role="search" autocomplete="off">
+      <span class="searchbar-icon" aria-hidden="true">🔍</span>
+      <input
+        id="q"
+        name="q"
+        type="search"
+        placeholder="搜索作品名称、简介、作者… 也可以试试拼音 saiche"
+        aria-label="搜索作品"
+        autocomplete="off"
+        spellcheck="false"
+      >
+      <button type="button" id="clear" class="searchbar-clear" aria-label="清空" hidden>✕</button>
+      <button type="submit" class="searchbar-submit">搜索</button>
+    </form>
+    <p class="hero-hint" id="hero-hint"></p>
+  </section>
+
+  <section class="filters" aria-label="筛选">
+    <div class="filter-group">
+      <span class="filter-label">语言</span>
+      <div class="chips" id="lang-chips"></div>
+    </div>
+    <div class="filter-group filter-group--right">
+      <label class="filter-label" for="sort">排序</label>
+      <select id="sort" class="select">
+        <option value="relevance">相关度</option>
+        <option value="views">浏览最多</option>
+        <option value="likes">点赞最多</option>
+        <option value="newest">最新发布</option>
+      </select>
+    </div>
+  </section>
+
+  <p class="result-status" id="status" role="status" aria-live="polite"></p>
+
+  <section id="results" class="results"></section>
+
+  <nav class="pager" id="pager" hidden>
+    <button type="button" class="pager-btn" id="prev">← 上一页</button>
+    <span class="pager-info" id="pager-info"></span>
+    <button type="button" class="pager-btn" id="next">下一页 →</button>
+  </nav>
+
+  <section class="empty" id="empty" hidden>
+    <div class="empty-art" aria-hidden="true">🧩</div>
+    <h2 id="empty-title">开始搜索</h2>
+    <p id="empty-body">索引覆盖 code.xueersi.com 的公开作品，支持中文与拼音。</p>
+  </section>
+</main>
+
+<footer class="foot">
+  <span id="foot-stats">索引加载中…</span>
+  <span class="foot-sep">·</span>
+  <span>数据来自 code.xueersi.com 公开接口，仅用于检索演示</span>
+</footer>
+
+<script src="/app.js" type="module"></script>
+</body>
+</html>
