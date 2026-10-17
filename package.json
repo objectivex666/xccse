@@ -11,6 +11,8 @@
     "serve": "node --disable-warning=ExperimentalWarning src/cli.mjs serve",
     "search": "node --disable-warning=ExperimentalWarning src/cli.mjs search",
     "scan": "node --disable-warning=ExperimentalWarning src/cli.mjs scan",
+    "build:pages": "node --disable-warning=ExperimentalWarning src/static-build.mjs",
+    "preview:pages": "node scripts/serve-docs.mjs",
     "test": "node --test --disable-warning=ExperimentalWarning",
     "verify:ui": "node scripts/verify-ui.mjs"
   },
